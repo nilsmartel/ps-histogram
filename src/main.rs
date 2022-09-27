@@ -54,13 +54,13 @@ fn query_field(field: String, table: String, mut client: postgres::Client) -> (J
     ];
 
     let (sender, receiver) = channel();
-    
+
     let handle = spawn(move || {
         let mut rows = client.query_raw(
-            "SELECT $1 FROM $2 SORT BY $1",
+            "SELECT $0 FROM $1 SORT BY $0",
             params,
         ).expect("query rows");
-    
+
         while let Some(row) = rows.next().unwrap() {
             let value: String = row.get(&field as &str );
             sender.send(value).expect("write to channel");
