@@ -512,7 +512,7 @@ dependencies = [
 ]
 
 [[package]]
-name = "ps-histogram"
+name = "ps-cardinality"
 version = "0.1.0"
 dependencies = [
  "anyhow",

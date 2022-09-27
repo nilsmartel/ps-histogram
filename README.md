@@ -1,13 +1,13 @@
-# ps-histogram
+# ps-cardinality
 
 Gather cardinality from postgres fields
 
 ```
-postgres histogram 0.1.0
+postgres cardinality 0.1.0
 Measure cardinality of fields in postgres
 
 USAGE:
-    ps-histogram --field <field> --table <table>
+    ps-cardinality --field <field> --table <table>
 
 FLAGS:
     -h, --help       Prints help information

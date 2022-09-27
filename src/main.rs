@@ -10,20 +10,20 @@ use structopt::StructOpt;
 
 fn main() {
     let Config { table, field } = Config::from_args();
-    let outputfile = format!("histogram--{table}--{field}.csv");
+    let outputfile = format!("{table}.csv");
     let client = db::client();
 
     let (handle, rows) = query_field(field, table, client);
 
-    let histo = histogram(rows);
+    let cardinality = derive_cardinality(rows);
 
     println!("writing to file {outputfile}");
 
     let mut output = File::create(outputfile).expect("to create outputfile");
 
-    let max = histo.len() as f64;
+    let max = cardinality.len() as f64;
 
-    for (i, value) in histo.into_iter().enumerate() {
+    for (i, value) in cardinality.into_iter().enumerate() {
         writeln!(&mut output, "{value}").expect("to write to outputfile");
 
         if i & 0x3ffff == 0 {
@@ -36,7 +36,7 @@ fn main() {
     handle.join().expect("join threads");
 }
 
-fn histogram(rows: Receiver<String>) -> Vec<u32> {
+fn derive_cardinality(rows: Receiver<String>) -> Vec<u32> {
     println!("building histogram");
 
     let mut v = Vec::new();

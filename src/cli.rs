@@ -2,7 +2,7 @@ use structopt::StructOpt;
 
 #[derive(StructOpt)]
 #[structopt(
-    name = "postgres histogram",
+    name = "postgres cardinality",
     about = "Measure cardinality of fields in postgres"
 )]
 pub struct Config {
