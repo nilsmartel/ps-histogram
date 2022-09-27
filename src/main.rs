@@ -21,8 +21,16 @@ fn main() {
 
     let mut output = File::create(outputfile).expect("to create outputfile");
 
-    for value in histo {
+    let max = histo.len() as f64;
+
+    for (i, value) in histo.into_iter().enumerate() {
         writeln!(&mut output, "{value}").expect("to write to outputfile");
+
+        if i & 0x3ffff == 0 {
+            let f = i as f64 / max;
+            let f = f * 100.0;
+            println!("{:03}%", f);
+        }
     }
 
     handle.join().expect("join threads");
