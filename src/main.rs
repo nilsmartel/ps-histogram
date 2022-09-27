@@ -68,7 +68,7 @@ fn query_field(
     let (sender, receiver) = channel();
 
     let handle = spawn(move || {
-        let query = format!("SELECT {field} FROM {table} SORT BY {field}");
+        let query = format!("SELECT {field} FROM {table} ORDER BY {field}");
         let params: [String; 0] = [];
         let mut rows = client.query_raw(&query, params).expect("query rows");
 
