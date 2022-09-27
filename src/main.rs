@@ -2,14 +2,14 @@ mod cli;
 mod db;
 use cli::Config;
 use fallible_iterator::FallibleIterator;
-use structopt::StructOpt;
 use std::fs::File;
+use std::io::Write;
 use std::sync::mpsc::*;
 use std::thread::{spawn, JoinHandle};
-use std::io::Write;
+use structopt::StructOpt;
 
 fn main() {
-    let Config {table, field} = Config::from_args();
+    let Config { table, field } = Config::from_args();
     let outputfile = format!("histogram--{table}--{field}.csv");
     let client = db::client();
 
@@ -48,21 +48,20 @@ fn histogram(rows: Receiver<String>) -> Vec<u32> {
     v
 }
 
-fn query_field(field: String, table: String, mut client: postgres::Client) -> (JoinHandle<()>, Receiver<String>) {
-    let params: Vec<String> = vec![
-        field.to_string(), table
-    ];
-
+fn query_field(
+    field: String,
+    table: String,
+    mut client: postgres::Client,
+) -> (JoinHandle<()>, Receiver<String>) {
     let (sender, receiver) = channel();
 
     let handle = spawn(move || {
-        let mut rows = client.query_raw(
-            "SELECT $0 FROM $1 SORT BY $0",
-            params,
-        ).expect("query rows");
+        let query = format!("SELECT {field} FROM {table} SORT BY {field}");
+        let params: [String; 0] = [];
+        let mut rows = client.query_raw(&query, params).expect("query rows");
 
         while let Some(row) = rows.next().unwrap() {
-            let value: String = row.get(&field as &str );
+            let value: String = row.get(&field as &str);
             sender.send(value).expect("write to channel");
         }
     });
