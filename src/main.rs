@@ -17,6 +17,8 @@ fn main() {
 
     let histo = histogram(rows);
 
+    println!("writing to file {outputfile}");
+
     let mut output = File::create(outputfile).expect("to create outputfile");
 
     for value in histo {
@@ -27,8 +29,11 @@ fn main() {
 }
 
 fn histogram(rows: Receiver<String>) -> Vec<u32> {
+    println!("building histogram");
+
     let mut v = Vec::new();
 
+    let mut i = 0;
     let mut count = 0;
     let mut last_value = String::new();
 
@@ -41,7 +46,14 @@ fn histogram(rows: Receiver<String>) -> Vec<u32> {
         v.push(count);
         last_value = value;
         count = 1;
+
+        i += 1;
+        if i & 0xffff == 0 {
+            print!(".");
+        }
     }
+
+    println!("\nsorting");
 
     v.sort_unstable();
 
